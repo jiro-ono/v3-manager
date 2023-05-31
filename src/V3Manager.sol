@@ -5,11 +5,15 @@ import "v3-core/interfaces/IUniswapV3Factory.sol";
 import "v3-core/interfaces/IUniswapV3Pool.sol";
 import "./Auth.sol";
 
-
+/// @title V3Manager for UniswapV3Factory
+/// @notice This contract is used to create fee tiers, set protocol fee on pools, and collect fees from pools
+/// @dev Uses Auth contract for owner and trusted operators to guard functions
 contract V3Manager is Auth {
   IUniswapV3Factory public factory;
   address public maker;
   uint8 public protocolFee;
+
+  // todo: probably should follow the safer transferOwnership pattern
 
   constructor(
     address _owner,
@@ -23,15 +27,17 @@ contract V3Manager is Auth {
     protocolFee = _protocolFee;
   }
 
-
-  // creating fee tiers, should be behind multisig / owner of this contract
-    // will call enableFeeAmount on factory contract
+  /// @notice Creates a new fee tier with passed tickSpacing
+  /// @dev will revert on factory contract if inputs invalid
+  /// @param fee The fee amount to enable, denominated in hundreths of a bip
+  /// @param tickSpacing The spacing between ticks to be enforced for all pools created with the given fee amount
   function createFeeTier(uint24 fee, int24 tickSpacing) external onlyOwner {
     IUniswapV3Factory(factory).enableFeeAmount(fee, tickSpacing);
   }
 
-  // setting protocol fee, we'll have a single protocol fee for all pools to start
-  // only multisig / owner can call this
+  /// @notice Sets the protocol fee to be used for all pools
+  /// @dev must be between 4 and 10, or 0 to disable - must apply to each pool everytime it's changed
+  /// @param _protocolFee The protocol fee to be used for all pools
   function setProtocolFee(uint8 _protocolFee) external onlyOwner {
     require(
       _protocolFee == 0 || (_protocolFee >= 4 && _protocolFee <= 10)
@@ -39,14 +45,16 @@ contract V3Manager is Auth {
     protocolFee = _protocolFee;
   }
 
-  // setting maker / receiver contract for fee collection
-  // only multisig / owner can call this
+  /// @notice Sets the maker contract to be used for collecting fees
+  /// @dev Where all fees will be sent to when collected
+  /// @param _maker The address of the maker contract
   function setMaker(address _maker) external onlyOwner {
     maker = _maker;
   }
 
-  // apply protocol fee to pool, operators can call this
-    // will call setFeeProtocol on each pool address
+  /// @notice Applies the protocol fee to all pools passed
+  /// @dev must be called for each pool, after protocolFee is updated
+  /// @param pools The addresses of the pools to apply the protocol fee to
   function applyProtocolFee(address[] calldata pools) external onlyTrusted {
     // todo: let's see if _increment is better for gas -> https://github.com/sushiswap/StakingContract/blob/master/src/StakingContractMainnet.sol#L418
     for (uint256 i = 0; i < pools.length; i++) {
@@ -55,9 +63,9 @@ contract V3Manager is Auth {
     }
   } 
 
-  // collect fees from pools, operators can call this
-  // send to a maker contract for fee breakdown / swaps
-    // will call collectProtocol on each pool address
+  /// @notice Collects fees from pools passed
+  /// @dev Will call collectProtocol on each pool address, sending fees to maker contract that is set
+  /// @param pools The addresses of the pools to collect fees from
   function collectFees(address[] calldata pools) external onlyTrusted {
     for (uint256 i = 0; i < pools.length; i++) {
       IUniswapV3Pool pool = IUniswapV3Pool(pools[i]);
