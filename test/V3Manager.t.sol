@@ -4,6 +4,7 @@ pragma solidity >= 0.8.0;
 import "utils/BaseTest.sol";
 
 import "/V3Manager.sol";
+import "interfaces/IERC20.sol";
 
 import {console2} from "forge-std/console2.sol";
 
@@ -16,12 +17,16 @@ contract V3ManagerTest is BaseTest {
   address public mockOperator = 0x4200000000000000000000000000000000000001;
   uint8 public protocolFee = 4; 
   
-  address[] public testPools = [
+  address[] public poolsToTest = [
     0x21988C9CFD08db3b5793c2C6782271dC94749251, // MATIC-USDC
-    0xFf5713FdbAD797b81539b5F9766859d4E050a6CC, // SUSHI-WETH
-    0x1b0585Fc8195fc04a46A365E670024Dfb63a960C, // USDC-WETH
-    0xf1A12338D39Fc085D8631E1A745B5116BC9b2A32  // MATIC-WETH
+    0xFf5713FdbAD797b81539b5F9766859d4E050a6CC // SUSHI-WETH
   ];
+
+  struct PreCollectedFees {
+      uint128 amount0;
+      uint128 amount1;
+  }
+  mapping(address => PreCollectedFees) preCollectedFeesMap;
 
   function setUp() public override {
     forkPolygon();
@@ -36,6 +41,10 @@ contract V3ManagerTest is BaseTest {
     factory.setOwner(address(v3Manager));
   }
 
+  // ========================
+  // Test main functionality
+  // ========================
+
   function testCreateFeeTier() public {
     // new fee & tick spacing
     uint24 fee = 1000;
@@ -47,33 +56,115 @@ contract V3ManagerTest is BaseTest {
     assertEq(factory.feeAmountTickSpacing(fee), tickSpacing);
   }
 
-  // test bad create fee tier
+  function testSetProtocolFeeAndApply() public {
+    // new protocol fee
+    uint8 newProtocolFee = 7;
 
-  function testSetProtocolFee() public {
+    vm.prank(mockOwner);
+    v3Manager.setProtocolFee(newProtocolFee);
 
+    assertEq(v3Manager.protocolFee(), newProtocolFee);
+
+    // update a pools protocolFee
+    vm.prank(mockOperator);
+    v3Manager.applyProtocolFee(poolsToTest);
+
+    for (uint256 i = 0; i < poolsToTest.length; i++) {
+      (, , , , , uint8 feeProtocol, ) = IUniswapV3Pool(poolsToTest[0]).slot0();
+      assertEq(feeProtocol, (newProtocolFee + (newProtocolFee << 4)));
+    }
   }
-
-  // test bad set protocol fee
 
   function testSetMaker() public {
+    // new maker
+    address newMaker = 0x4200000000000000000000000000000000000003;
 
+    vm.prank(mockOwner);
+    v3Manager.setMaker(newMaker);
+
+    assertEq(v3Manager.maker(), newMaker);
   }
 
-  function testApplyProtocolFeeSinglePool() public {
+  function testCollectFees() public {
+    // grab pre-collection fees pending to be collected
+    for (uint256 i = 0; i < poolsToTest.length; i++) {
+      (uint128 amount0, uint128 amount1) = IUniswapV3Pool(poolsToTest[i]).protocolFees();
+      // during collection slot is not fully cleared, so we need to subtract 1 from each amount 
+      amount0--;
+      amount1--;
+      preCollectedFeesMap[poolsToTest[i]] = PreCollectedFees(amount0, amount1);
+    }
 
+    // collect fees from pools
+    vm.prank(mockOperator);
+    v3Manager.collectFees(poolsToTest);
+
+    // check that fees were collected
+    for (uint256 i = 0; i < poolsToTest.length; i++) {
+      IERC20 token0 = IERC20(IUniswapV3Pool(poolsToTest[i]).token0());
+      IERC20 token1 = IERC20(IUniswapV3Pool(poolsToTest[i]).token1());
+      
+      uint128 amount0 = uint128(token0.balanceOf(v3Manager.maker()));
+      uint128 amount1 = uint128(token1.balanceOf(v3Manager.maker()));
+
+      assertEq(amount0, preCollectedFeesMap[poolsToTest[i]].amount0);
+      assertEq(amount1, preCollectedFeesMap[poolsToTest[i]].amount1);
+    }
   }
 
-  function testApplyProtocolFeeMultiplePools() public {
+  // ================
+  // Gas Snapshots
+  // ================
 
+  function testGasSnapshotCollectFees() public {
+    vm.prank(mockOperator);
+    v3Manager.collectFees(poolsToTest);
   }
 
-  function testCollectFeesSinglePool() public {
+  // ================
+  // Test bad inputs
+  // ================
+  function testCreateBadFee() public {
+    // new fee & tick spacing
+    uint24 fee = 1000001;
+    int24 tickSpacing = 20;
 
+    vm.prank(mockOwner);
+    vm.expectRevert();
+    v3Manager.createFeeTier(fee, tickSpacing);
   }
 
-  function testCollectFeesMultiplePools() public {
+  function testCreateBadTickSpacing() public {
+    // new fee & tick spacing
+    uint24 fee = 1000;
+    int24 tickSpacing = 16385;
 
+    vm.prank(mockOwner);
+    vm.expectRevert();
+    v3Manager.createFeeTier(fee, tickSpacing);
   }
 
-  // test owner & operator controls
+  function testBadProtocolFee() public {
+    // new protocol fee
+    uint8 newProtocolFee = 20;
+
+    vm.prank(mockOwner);
+    vm.expectRevert(); 
+    v3Manager.setProtocolFee(newProtocolFee);
+  }
+
+  // ===========
+  // Test onlyOwner & onlyOperator modifiers
+  // ===========
+  function testBadOnlyOwnerCall() public {
+    vm.prank(mockOperator);
+    vm.expectRevert();
+    v3Manager.setProtocolFee(5);
+  }
+
+  function testBadOnlyOperatorCall() public {
+    vm.prank(0x4200000000000000000000000000000000000005);
+    vm.expectRevert();
+    v3Manager.applyProtocolFee(poolsToTest);
+  }
 }

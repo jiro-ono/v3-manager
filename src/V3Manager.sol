@@ -12,14 +12,14 @@ contract V3Manager is Auth {
   uint8 public protocolFee;
 
   constructor(
-    address owner,
-    address operator,
-    address factoryAddress,
-    address makerAddress,
+    address _owner,
+    address _operator,
+    address _factory,
+    address _maker,
     uint8 _protocolFee
-  ) Auth(owner, operator) {
-    factory = IUniswapV3Factory(factoryAddress);
-    maker = makerAddress;
+  ) Auth(_owner, _operator) {
+    factory = IUniswapV3Factory(_factory);
+    maker = _maker;
     protocolFee = _protocolFee;
   }
 
@@ -58,10 +58,11 @@ contract V3Manager is Auth {
   // collect fees from pools, operators can call this
   // send to a maker contract for fee breakdown / swaps
     // will call collectProtocol on each pool address
-  function collectFees(address[] calldata pools, uint128[] calldata amount0Requested, uint128[] calldata amount1Requested) external onlyTrusted {
+  function collectFees(address[] calldata pools) external onlyTrusted {
     for (uint256 i = 0; i < pools.length; i++) {
       IUniswapV3Pool pool = IUniswapV3Pool(pools[i]);
-      pool.collectProtocol(maker, amount0Requested[i], amount1Requested[i]);
+      (uint128 amount0, uint128 amount1) = pool.protocolFees();
+      pool.collectProtocol(maker, amount0, amount1);
     }
   }
 }
