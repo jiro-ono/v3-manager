@@ -34,7 +34,11 @@ contract V3ManagerTest is BaseTest {
 
     factory = IUniswapV3Factory(constants.getAddress("polygon.v3Factory"));
 
-    v3Manager = new V3Manager(mockOwner, mockOperator, address(factory), mockMaker, protocolFee);
+    v3Manager = new V3Manager(mockOperator, address(factory), mockMaker, protocolFee);
+    v3Manager.transferOwnership(mockOwner);
+
+    vm.prank(mockOwner);
+    v3Manager.acceptOwnership();
     
     // switch owner of factory to mockOwner
     vm.prank(factory.owner());
@@ -166,5 +170,52 @@ contract V3ManagerTest is BaseTest {
     vm.prank(0x4200000000000000000000000000000000000005);
     vm.expectRevert();
     v3Manager.applyProtocolFee(poolsToTest);
+  }
+
+  // ===========
+  // Test ownership transfer process
+  // ===========
+  function testTransferOwnership2Step() public {
+    // transfer ownership to new address
+    address newOwner = 0x4200000000000000000000000000000000000005;
+    vm.prank(mockOwner);
+    v3Manager.transferOwnership(newOwner);
+
+    assertEq(v3Manager.pendingOwner(), newOwner);
+
+    // accept ownership from new address
+    vm.prank(newOwner);
+    v3Manager.acceptOwnership();
+
+    assertEq(v3Manager.owner(), newOwner);
+  }
+
+  function testTransferOwnershipBad2Step() public {
+    // transfer ownership to new address
+    address newOwner = 0x4200000000000000000000000000000000000005;
+    address newOwner2 = 0x4200000000000000000000000000000000000007;
+    vm.prank(mockOwner);
+    v3Manager.transferOwnership(newOwner);
+
+    assertEq(v3Manager.pendingOwner(), newOwner);
+
+    // accept ownership from wrong address
+    vm.prank(newOwner2);
+    vm.expectRevert();
+    v3Manager.acceptOwnership();
+
+    assertEq(v3Manager.owner(), mockOwner);
+
+    // now set pending as newOwner2 & try again
+    vm.prank(mockOwner);
+    v3Manager.transferOwnership(newOwner2);
+
+    assertEq(v3Manager.pendingOwner(), newOwner2);
+
+    // accept ownership from new address
+    vm.prank(newOwner2);
+    v3Manager.acceptOwnership();
+
+    assertEq(v3Manager.owner(), newOwner2);
   }
 }

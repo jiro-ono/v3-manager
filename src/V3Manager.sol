@@ -13,15 +13,15 @@ contract V3Manager is Auth {
   address public maker;
   uint8 public protocolFee;
 
-  // todo: probably should follow the safer transferOwnership pattern
+  // todo: probably should follow the safer 2 step transferOwnership pattern
 
   constructor(
-    address _owner,
     address _operator,
     address _factory,
     address _maker,
     uint8 _protocolFee
-  ) Auth(_owner, _operator) {
+  ) Auth(_operator) {
+    // initial owner is msg.sender
     factory = IUniswapV3Factory(_factory);
     maker = _maker;
     protocolFee = _protocolFee;
