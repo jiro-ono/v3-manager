@@ -4,6 +4,7 @@ pragma solidity >= 0.8.0;
 import "utils/BaseTest.sol";
 
 import "/TokenChomper.sol";
+import "/RouteProcessorHelper.sol";
 import "interfaces/IERC20.sol";
 
 import {console2} from "forge-std/console2.sol";
@@ -37,8 +38,36 @@ contract TokenChomperTest is BaseTest {
     vm.startPrank(mockOwner);
     tokenChomper.withdraw(constants.getAddress("polygon.usdc"), mockOwner, 1000000000);
     tokenChomper.withdraw(constants.getAddress("polygon.wmatic"), mockOwner, 1000000000000000000000);
+    vm.stopPrank();
 
     assertEq(IERC20(constants.getAddress("polygon.usdc")).balanceOf(mockOwner), 1000000000);
     assertEq(IERC20(constants.getAddress("polygon.wmatic")).balanceOf(mockOwner), 1000000000000000000000);
   }
+
+  function testwrapEth() public {
+    bytes memory testRouteCompute = RouteProcessorHelper.computeV3Route();
+
+    console2.logBytes(testRouteCompute);
+  }
+
+  function testProcessRouteOwner() public {
+    // test with no slippage protection
+    // swapping the wmatic for usdc
+    address tokenIn = constants.getAddress("polygon.wmatic");
+    uint256 amountIn = 1000000000000000000;
+    address tokenOut = constants.getAddress("polygon.usdc");
+    uint256 amountOutMin = 0;
+
+
+
+    vm.startPrank(mockOwner);
+
+
+  }
+
+  function testBuyWethWithRouteOperator() public {
+
+  }
+
+
 }
