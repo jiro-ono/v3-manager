@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 import "/interfaces/IRouteProcessor3.sol";
+import "interfaces/IERC20.sol";
 import "./Auth.sol";
 
 contract TokenChomper is Auth {
@@ -14,7 +15,7 @@ contract TokenChomper is Auth {
   bytes4 private constant TRANSFER_SELECTOR = bytes4(keccak256(bytes('transfer(address,uint256)')));
 
   address public immutable weth;
-  IRouteProcessor3 public immutable routeProcessor;
+  IRouteProcessor3 public routeProcessor;
 
   constructor(
     address _operator,
@@ -24,6 +25,10 @@ contract TokenChomper is Auth {
     // initial owner is msg.sender
     routeProcessor = IRouteProcessor3(_routeProcessor);
     weth = _weth;
+  }
+
+  function updateRouteProcessor(address _routeProcessor) external onlyOwner {
+    routeProcessor = IRouteProcessor3(_routeProcessor);
   }
 
   // swap to any output token
@@ -36,6 +41,7 @@ contract TokenChomper is Auth {
     bytes memory route
   ) external onlyOwner {
     // process route to any output token, slippage will be handled by the route processor
+    IERC20(tokenIn).transfer(address(routeProcessor), amountIn);
     routeProcessor.processRoute(
       tokenIn, amountIn, tokenOut, amoutOutMin, address(this), route
     ); 
@@ -87,5 +93,4 @@ contract TokenChomper is Auth {
   }
 
   receive() external payable {}
-
 }

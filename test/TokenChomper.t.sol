@@ -48,30 +48,34 @@ contract TokenChomperTest is BaseTest {
   }
 
   function testwrapEth() public {
-    bytes memory testRouteCompute = routeProcessorHelper.computeRoute(
-      false,
-      constants.getAddress("polygon.wmatic"),
-      constants.getAddress("polygon.usdc"),
-      500,
-      mockOwner
-    );
-
-    console2.logBytes(testRouteCompute);
+  
   }
 
   function testProcessRouteOwner() public {
     // test with no slippage protection
     // swapping the wmatic for usdc
     address tokenIn = constants.getAddress("polygon.wmatic");
-    uint256 amountIn = 1000000000000000000;
     address tokenOut = constants.getAddress("polygon.usdc");
-    uint256 amountOutMin = 0;
 
-
+    console2.log("before test swap");
+    console2.log("tokenIn balance: ", IERC20(tokenIn).balanceOf(address(tokenChomper)));
+    console2.log("tokenOut balance: ", IERC20(tokenOut).balanceOf(address(tokenChomper)));
 
     vm.startPrank(mockOwner);
+    bytes memory testRouteCompute = routeProcessorHelper.computeRoute(
+      true,
+      false,
+      tokenIn,
+      tokenOut,
+      500,
+      address(tokenChomper)
+    );
+    tokenChomper.processRoute(tokenIn, 1000000000000000000000, tokenOut, 0, testRouteCompute);
+    vm.stopPrank();
 
-
+    console2.log("results of test swap");
+    console2.log("tokenIn balance: ", IERC20(tokenIn).balanceOf(address(tokenChomper)));
+    console2.log("tokenOut balance: ", IERC20(tokenOut).balanceOf(address(tokenChomper)));
   }
 
   function testBuyWethWithRouteOperator() public {

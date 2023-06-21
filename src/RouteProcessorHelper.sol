@@ -17,7 +17,7 @@ contract RouteProcessorHelper {
 
   // only computes routes for v2, and v3 single hop swaps
   // mainly to be used for testing purposes
-  function computeRoute(bool isV2, address tokenIn, address tokenOut, uint24 fee, address to) public view returns (bytes memory route) {
+  function computeRoute(bool rpHasToken, bool isV2, address tokenIn, address tokenOut, uint24 fee, address to) public view returns (bytes memory route) {
     address pair;
     address token0;
     address token1;
@@ -40,7 +40,7 @@ contract RouteProcessorHelper {
     }
 
     route = abi.encodePacked(
-      uint8(0x02), // always does commandCode processUserERC20
+      uint8(rpHasToken ? 0x01 : 0x02), // always does commandCode processUserERC20
       tokenIn,
       uint8(0x01), // always does 1 route
       uint16(0xffff), // always does full amount
