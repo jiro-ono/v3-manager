@@ -10,7 +10,9 @@ import "interfaces/IERC20.sol";
 import {console2} from "forge-std/console2.sol";
 
 contract TokenChomperTest is BaseTest {
+  RouteProcessorHelper public routeProcessorHelper;
   TokenChomper public tokenChomper;
+
 
   address public mockOwner = 0x4200000000000000000000000000000000000000;
   address public mockOperator = 0x4200000000000000000000000000000000000001;
@@ -19,6 +21,7 @@ contract TokenChomperTest is BaseTest {
     forkPolygon();
     super.setUp();
     
+    routeProcessorHelper = new RouteProcessorHelper(constants.getAddress("polygon.v2Factory"), constants.getAddress("polygon.v3Factory"));
     tokenChomper = new TokenChomper(mockOperator, constants.getAddress("polygon.routeprocessor3"), constants.getAddress("polygon.wmatic"));
     tokenChomper.transferOwnership(mockOwner);
 
@@ -45,7 +48,13 @@ contract TokenChomperTest is BaseTest {
   }
 
   function testwrapEth() public {
-    bytes memory testRouteCompute = RouteProcessorHelper.computeV3Route();
+    bytes memory testRouteCompute = routeProcessorHelper.computeRoute(
+      false,
+      constants.getAddress("polygon.wmatic"),
+      constants.getAddress("polygon.usdc"),
+      500,
+      mockOwner
+    );
 
     console2.logBytes(testRouteCompute);
   }
