@@ -40,7 +40,7 @@ contract RouteProcessorHelper {
     }
 
     route = abi.encodePacked(
-      uint8(rpHasToken ? 0x01 : 0x02), // always does commandCode processUserERC20
+      uint8(rpHasToken ? 0x01 : 0x02), // 0x01 for pre-transfer to rp & 0x02 for transferFrom msg.sender
       tokenIn,
       uint8(0x01), // always does 1 route
       uint16(0xffff), // always does full amount
@@ -51,23 +51,3 @@ contract RouteProcessorHelper {
     );
   }
 }
-
-
-/*V3 Route
-
-0x0282af49447d8a07e3bd95bd0d56f35241523fbab101ffff0159c055de24d3e16b5fdc0c91f85ab2ac831828d9004bb4c1b0745ef7b4642feeccd0740dec417ca0a0
-
-0x02 -> commandCode (2 = processUserERC20)
-0x82af49447d8a07e3bd95bd0d56f35241523fbab1 -> tokenIn
-0x01 -> amount of routes taken
-0xffff -> share of amountIn for current route in loop (0xffff is full amount)
-0x01 -> poolType (0 = v2, 1 = v3)
-0x59c055de24d3e16b5fdc0c91f85ab2ac831828d9 -> poolAddress
-0x00 -> zeroForOne (0 = false, 1 = true or 0 = token0 to token1 and 1 = token1 to token0 in pool)
-0x4bb4c1b0745ef7b4642feeccd0740dec417ca0a0 -> receipent
-*/
-
-/*
-0x0282af49447d8a07e3bd95bd0d56f35241523fbab101ffff0159c055de24d3e16b5fdc0c91f85ab2ac831828d9004bb4c1b0745ef7b4642feeccd0740dec417ca0a0
-0x0282af49447d8a07e3bd95bd0d56f35241523fbab101ffff0159c055de24d3e16b5fdc0c91f85ab2ac831828d9004bb4c1b0745ef7b4642feeccd0740dec417ca0a0
-*/

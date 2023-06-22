@@ -5,17 +5,16 @@ import "/interfaces/IRouteProcessor3.sol";
 import "interfaces/IERC20.sol";
 import "./Auth.sol";
 
+/// @title TokenChomper for selling accumulated tokens for weth or other base assets
+/// @notice This contract will be used for fee collection and breakdown
+/// @dev Uses Auth contract for 2-step owner process and trust operators to guard functions
 contract TokenChomper is Auth {
-  // takes in ERC20 tokens and uses route processor to swap tokens to eth or other base assets
-  // todo: prob wanna mix in trident and unwindooor v2 stuff into this so it can swap on some of those pools (fee tokens & rebasing)
-  // using the RouteProcessor3 contract
-
-  error TransferFailed();
+  address public immutable weth;
+  IRouteProcessor3 public routeProcessor;
 
   bytes4 private constant TRANSFER_SELECTOR = bytes4(keccak256(bytes('transfer(address,uint256)')));
 
-  address public immutable weth;
-  IRouteProcessor3 public routeProcessor;
+  error TransferFailed();
 
   constructor(
     address _operator,
@@ -27,12 +26,20 @@ contract TokenChomper is Auth {
     weth = _weth;
   }
 
+  /// @notice Updates the route processor to be used for swapping tokens
+  /// @dev make sure new route processor is backwards compatiable (should be)
+  /// @param _routeProcessor The address of the new route processor
   function updateRouteProcessor(address _routeProcessor) external onlyOwner {
     routeProcessor = IRouteProcessor3(_routeProcessor);
   }
-
-  // swap to any output token
-    // guarded by owner
+  
+  /// @notice Processes a route selling any of the tokens in TokenChomper for an output token
+  /// @dev must be called by owner, since unguarded output token
+  /// @param tokenIn The address of the token to be sold
+  /// @param amountIn The amount of the token to be sold
+  /// @param tokenOut The address of the token to be bought
+  /// @param amoutOutMin The minimum amount of the token to be bought (slippage protection)
+  /// @param route The route to be used for swapping
   function processRoute(
     address tokenIn,
     uint256 amountIn,
@@ -47,8 +54,12 @@ contract TokenChomper is Auth {
     ); 
   }
 
-  // swap to weth using route & routeprocessor
-    // guarded by operator
+  /// @notice Processes a route selling any of the tokens in TokenChomper for weth (native wraped token)
+  /// @dev can be called by operators, guarded output token so will always sell into weth
+  /// @param tokenIn The address of the token to be sold  
+  /// @param amountIn The amount of the token to be sold
+  /// @param amoutOutMin The minimum amount of weth to be bought (slippage protection)
+  /// @param route The route to be used for swapping
   function buyWethWithRoute(
     address tokenIn,
     uint256 amountIn,
@@ -63,10 +74,11 @@ contract TokenChomper is Auth {
     ); 
   }
 
-
-  // withdraw token
-    // guarded by owner
-  // Allow the owner to withdraw the funds and bridge them to mainnet.
+  /// @notice Withdraw any token or eth from the contract
+  /// @dev can only be called by owner
+  /// @param token The address of the token to be withdrawn, 0x0 for eth
+  /// @param to The address to send the token to
+  /// @param _value The amount of the token to be withdrawn
   function withdraw(address token, address to, uint256 _value) onlyOwner external {
     if (token != address(0)) {
       _safeTransfer(token, to, _value);
@@ -82,11 +94,17 @@ contract TokenChomper is Auth {
     if (!success || (data.length != 0 && !abi.decode(data, (bool)))) revert TransferFailed();
   }
 
-  // In case we receive any unwrapped ethereum we can call this.
+  /// @notice In case we receive any unwrapped eth (native token) we can call this
+  /// @dev anyone can call this 
   function wrapEth() external {
     weth.call{value: address(this).balance}("");
   }
 
+  /// @notice Available function in case we need to do any calls that aren't supported by the contract (unwinding lp positions, etc.)
+  /// @dev can only be called by owner
+  /// @param to The address to send the call to
+  /// @param _value The amount of eth to send with the call
+  /// @param data The data to be sent with the call
   function doAction(address to, uint256 _value, bytes memory data) onlyOwner external {
     (bool success, ) = to.call{value: _value}(data);
     require(success);
