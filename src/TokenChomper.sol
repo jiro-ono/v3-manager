@@ -34,7 +34,7 @@ contract TokenChomper is Auth {
   }
   
   /// @notice Processes a route selling any of the tokens in TokenChomper for an output token
-  /// @dev must be called by owner, since unguarded output token, *some deployments allow operators to call this
+  /// @dev can be called by operators
   /// @param tokenIn The address of the token to be sold
   /// @param amountIn The amount of the token to be sold
   /// @param tokenOut The address of the token to be bought
@@ -46,31 +46,11 @@ contract TokenChomper is Auth {
     address tokenOut,
     uint256 amoutOutMin,
     bytes memory route
-  ) external onlyOwner {
+  ) external onlyTrusted {
     // process route to any output token, slippage will be handled by the route processor
     IERC20(tokenIn).transfer(address(routeProcessor), amountIn);
     routeProcessor.processRoute(
       tokenIn, amountIn, tokenOut, amoutOutMin, address(this), route
-    ); 
-  }
-
-  /// @notice Processes a route selling any of the tokens in TokenChomper for weth (native wraped token)
-  /// @dev can be called by operators, guarded output token so will always sell into weth
-  /// @param tokenIn The address of the token to be sold  
-  /// @param amountIn The amount of the token to be sold
-  /// @param amoutOutMin The minimum amount of weth to be bought (slippage protection)
-  /// @param route The route to be used for swapping
-  function buyWethWithRoute(
-    address tokenIn,
-    uint256 amountIn,
-    uint256 amoutOutMin,
-    bytes memory route
-  ) external onlyTrusted {
-    // to address will always be this contract
-    // tokenOut will always be weth
-    // slippage will be handled by the route processor
-    routeProcessor.processRoute(
-      tokenIn, amountIn, weth, amoutOutMin, address(this), route
     ); 
   }
 
@@ -96,7 +76,7 @@ contract TokenChomper is Auth {
 
   /// @notice In case we receive any unwrapped eth (native token) we can call this
   /// @dev anyone can call this 
-  function wrapEth() external {
+  function wrapEth() onlyTrusted external {
     weth.call{value: address(this).balance}("");
   }
 

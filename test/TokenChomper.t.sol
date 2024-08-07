@@ -23,6 +23,7 @@ contract TokenChomperTest is BaseTest {
     
     routeProcessorHelper = new RouteProcessorHelper(constants.getAddress("polygon.v2Factory"), constants.getAddress("polygon.v3Factory"), constants.getAddress("mainnet.rp"), constants.getAddress("mainnet.weth"));
     tokenChomper = new TokenChomper(mockOperator, constants.getAddress("polygon.routeprocessor3"), constants.getAddress("polygon.wmatic"));
+    tokenChomper.setTrusted(mockOwner, true);
     tokenChomper.transferOwnership(mockOwner);
 
     vm.prank(mockOwner);
@@ -51,7 +52,7 @@ contract TokenChomperTest is BaseTest {
   
   }
 
-  function testProcessRouteOwner() public {
+  function testProcessRoute() public {
     // test with no slippage protection
     // swapping the wmatic for usdc
     address tokenIn = constants.getAddress("polygon.wmatic");
@@ -61,7 +62,7 @@ contract TokenChomperTest is BaseTest {
     console2.log("tokenIn balance: ", IERC20(tokenIn).balanceOf(address(tokenChomper)));
     console2.log("tokenOut balance: ", IERC20(tokenOut).balanceOf(address(tokenChomper)));
 
-    vm.startPrank(mockOwner);
+    vm.startPrank(mockOperator);
     bytes memory testRouteCompute = routeProcessorHelper.computeRoute(
       true,
       false,
