@@ -4,7 +4,7 @@ pragma solidity >= 0.8.0;
 import "utils/BaseTest.sol";
 
 import "/TokenChomper.sol";
-import "/RouteProcessorHelper.sol";
+import "../utils/RouteProcessorHelper.sol";
 import "interfaces/IERC20.sol";
 
 import {console2} from "forge-std/console2.sol";
@@ -21,7 +21,7 @@ contract TokenChomperTest is BaseTest {
     forkPolygon();
     super.setUp();
     
-    routeProcessorHelper = new RouteProcessorHelper(constants.getAddress("polygon.v2Factory"), constants.getAddress("polygon.v3Factory"));
+    routeProcessorHelper = new RouteProcessorHelper(constants.getAddress("polygon.v2Factory"), constants.getAddress("polygon.v3Factory"), constants.getAddress("mainnet.rp"), constants.getAddress("mainnet.weth"));
     tokenChomper = new TokenChomper(mockOperator, constants.getAddress("polygon.routeprocessor3"), constants.getAddress("polygon.wmatic"));
     tokenChomper.transferOwnership(mockOwner);
 

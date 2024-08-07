@@ -1,17 +1,16 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity >= 0.8.0;
 
-interface IRouteProcessor3 {
+interface IRouteProcessor {
   
-  event Route(
-    address indexed from, 
-    address to, 
-    address indexed tokenIn, 
-    address indexed tokenOut, 
-    uint amountIn, 
-    uint amountOutMin,
-    uint amountOut
-  );
+  struct RouteProcessorData {
+        address tokenIn;
+        uint256 amountIn;
+        address tokenOut;
+        uint256 amountOutMin;
+        address to;
+        bytes route;
+  }
   
   function processRoute(
     address tokenIn,

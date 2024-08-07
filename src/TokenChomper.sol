@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity >=0.8.0;
 
-import "/interfaces/IRouteProcessor3.sol";
+import "/interfaces/IRouteProcessor.sol";
 import "interfaces/IERC20.sol";
 import "./Auth.sol";
 
@@ -10,7 +10,7 @@ import "./Auth.sol";
 /// @dev Uses Auth contract for 2-step owner process and trust operators to guard functions
 contract TokenChomper is Auth {
   address public immutable weth;
-  IRouteProcessor3 public routeProcessor;
+  IRouteProcessor public routeProcessor;
 
   bytes4 private constant TRANSFER_SELECTOR = bytes4(keccak256(bytes('transfer(address,uint256)')));
 
@@ -22,7 +22,7 @@ contract TokenChomper is Auth {
     address _weth
   ) Auth(_operator) {
     // initial owner is msg.sender
-    routeProcessor = IRouteProcessor3(_routeProcessor);
+    routeProcessor = IRouteProcessor(_routeProcessor);
     weth = _weth;
   }
 
@@ -30,7 +30,7 @@ contract TokenChomper is Auth {
   /// @dev make sure new route processor is backwards compatiable (should be)
   /// @param _routeProcessor The address of the new route processor
   function updateRouteProcessor(address _routeProcessor) external onlyOwner {
-    routeProcessor = IRouteProcessor3(_routeProcessor);
+    routeProcessor = IRouteProcessor(_routeProcessor);
   }
   
   /// @notice Processes a route selling any of the tokens in TokenChomper for an output token
