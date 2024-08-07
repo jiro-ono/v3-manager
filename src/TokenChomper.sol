@@ -34,7 +34,7 @@ contract TokenChomper is Auth {
   }
   
   /// @notice Processes a route selling any of the tokens in TokenChomper for an output token
-  /// @dev must be called by owner, since unguarded output token
+  /// @dev must be called by owner, since unguarded output token, *some deployments allow operators to call this
   /// @param tokenIn The address of the token to be sold
   /// @param amountIn The amount of the token to be sold
   /// @param tokenOut The address of the token to be bought
