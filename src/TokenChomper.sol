@@ -75,7 +75,7 @@ contract TokenChomper is Auth {
   }
 
   /// @notice In case we receive any unwrapped eth (native token) we can call this
-  /// @dev anyone can call this 
+  /// @dev operators can call this 
   function wrapEth() onlyTrusted external {
     weth.call{value: address(this).balance}("");
   }

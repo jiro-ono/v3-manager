@@ -3,31 +3,38 @@
 
 | Network  | Address                                    |
 | -------- | ------------------------------------------ |
-| Ethereum | 0x503b9FDa81acB39553eAE6d56B6e87F595CCbef7 |
-| Arbitrum |  |
-| Avalanche |  |
-| Base |  |
-| Blast |  |
-| Boba |  |
-| Boba BNB |  |
-| BSC |  |
-| BTTC |  |
-| CELO |  |
-| CORE |  |
-| Fantom |  |
-| Fuse |  |
-| Gnosis |  |
-| Haqq |  |
-| Harmony |  |
-| Kava |  |
-| Linea |  |
-| Metis |  |
-| Moonbeam |  |
-| Moonriver |  |
-| Optimism |  |
-| Polygon |  |
-| Polygon Zkevm |  |
-| Rootstock |   |
-| Skale Europa |  |
-| Telos |  |
-| Zetachain |  |
+| Ethereum | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| Arbitrum Nova | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| Arbitrum | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| Avalanche | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| Base | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| Blast | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| Boba | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| Boba BNB | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| BSC | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| BTTC | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| CELO | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| CORE | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| Cronos |  |
+| Fantom | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| Filecoin | |
+| Fuse | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| Gnosis | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| Haqq | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| Harmony | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| Kava | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| Linea | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| Metis | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| Moonbeam | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| Moonriver | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| Optimism | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| Polygon | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| Polygon Zkevm | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| Rootstock | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| Scroll | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| Skale Europa | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| Telos | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| Thundercore | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| Zetachain | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+
+
