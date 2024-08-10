@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity >= 0.8.0;
 
-import "v3-core/interfaces/IUniswapV3Factory.sol";
-import "v3-core/interfaces/IUniswapV3Pool.sol";
+import "interfaces/IUniswapV3Factory.sol";
+import "interfaces/IUniswapV3Pool.sol";
 import "./Auth.sol";
 
 /// @title V3Manager for UniswapV3Factory

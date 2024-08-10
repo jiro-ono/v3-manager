@@ -1,10 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity >=0.8.0;
 
-//import "/interfaces/IUniswapV3Factory.sol";
-//import "interfaces/IUniswapV3Pool.sol";
-//import "interfaces/IUniswapV2Pair.sol";
-
 interface IUniswapV2Factory {
   function getPair(address tokenA, address tokenB) external view returns (address pair);
 }
