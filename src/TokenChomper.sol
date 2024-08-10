@@ -48,7 +48,7 @@ contract TokenChomper is Auth {
     bytes memory route
   ) external onlyTrusted {
     // process route to any output token, slippage will be handled by the route processor
-    IERC20(tokenIn).transfer(address(routeProcessor), amountIn);
+    _safeTransfer(tokenIn, address(routeProcessor), amountIn);
     routeProcessor.processRoute(
       tokenIn, amountIn, tokenOut, amoutOutMin, address(this), route
     ); 
