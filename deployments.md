@@ -1,5 +1,5 @@
 
-# TokenChomper
+# TokenChomper1 - Frontend Fees
 
 | Network  | Address                                    |
 | -------- | ------------------------------------------ |
