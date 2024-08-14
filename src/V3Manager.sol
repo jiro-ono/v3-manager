@@ -33,6 +33,12 @@ contract V3Manager is Auth {
     IUniswapV3Factory(factory).enableFeeAmount(fee, tickSpacing);
   }
 
+  /// @notice transfer ownership of the factory contract
+  /// @param newOwner The newOwner address to set on the factory contract
+  function setFactoryOwner(address newOwner) external onlyOwner {
+    IUniswapV3Factory(factory).setOwner(newOwner);
+  }
+
   /// @notice Sets the protocol fee to be used for all pools
   /// @dev must be between 4 and 10, or 0 to disable - must apply to each pool everytime it's changed
   /// @param _protocolFee The protocol fee to be used for all pools
@@ -69,5 +75,15 @@ contract V3Manager is Auth {
       (uint128 amount0, uint128 amount1) = pool.protocolFees();
       pool.collectProtocol(maker, amount0, amount1);
     }
+  }
+
+  /// @notice Available function in case we need to do any calls that aren't supported by the contract (unwinding lp positions, etc.)
+  /// @dev can only be called by owner
+  /// @param to The address to send the call to
+  /// @param _value The amount of eth to send with the call
+  /// @param data The data to be sent with the call
+  function doAction(address to, uint256 _value, bytes memory data) onlyOwner external {
+    (bool success, ) = to.call{value: _value}(data);
+    require(success);
   }
 }

@@ -30,6 +30,6 @@ playground-trace:
 	forge test --match-path playground/Playground.t.sol -vvvv --gas-report
 
 deploy:
-	forge script ./scripts/DeployV3ManagerAndChomper.s.sol --broadcast --slow --optimize --optimizer-runs 999999 --verify --legacy --rpc-url ${RPC_URL} --chain ${CHAIN_ID} --etherscan-api-key ${ETHERSCAN_API_KEY}
+	forge script ./scripts/DeployV3ManagerAndChomper.s.sol --broadcast --slow --optimize --optimizer-runs 999999 --verify --rpc-url ${RPC_URL} --chain ${CHAIN_ID} --etherscan-api-key ${ETHERSCAN_API_KEY}
 
 .PHONY: test playground

@@ -218,4 +218,16 @@ contract V3ManagerTest is BaseTest {
 
     assertEq(v3Manager.owner(), newOwner2);
   }
+
+  function testTransferFactoryOwnership() public {
+    // transfer ownership of factory to new address
+    address newOwner = 0x4200000000000000000000000000000000000005;
+
+    assertEq(factory.owner(), address(v3Manager));
+
+    vm.prank(address(mockOwner));
+    v3Manager.setFactoryOwner(newOwner);
+
+    assertEq(factory.owner(), newOwner);
+  }
 }
