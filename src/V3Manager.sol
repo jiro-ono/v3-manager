@@ -13,8 +13,6 @@ contract V3Manager is Auth {
   address public maker;
   uint8 public protocolFee;
 
-  // todo: probably should follow the safer 2 step transferOwnership pattern
-
   constructor(
     address _operator,
     address _factory,
@@ -56,7 +54,6 @@ contract V3Manager is Auth {
   /// @dev must be called for each pool, after protocolFee is updated
   /// @param pools The addresses of the pools to apply the protocol fee to
   function applyProtocolFee(address[] calldata pools) external onlyTrusted {
-    // todo: let's see if _increment is better for gas -> https://github.com/sushiswap/StakingContract/blob/master/src/StakingContractMainnet.sol#L418
     for (uint256 i = 0; i < pools.length; i++) {
       IUniswapV3Pool pool = IUniswapV3Pool(pools[i]);
       pool.setFeeProtocol(protocolFee, protocolFee);
