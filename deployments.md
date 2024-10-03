@@ -38,9 +38,13 @@
 | Thundercore | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
 | Zetachain | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
 | ZkSync | 0xCd4eE95b182139969b041DdDc49c5449C21702E1 |
+| Manta | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| Mode | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| Taiko | 0xca226bd9c754F1283123d32B2a7cF62a722f8ADa |
+| Zklink-Nova | 0x8b6E8186dE74fe0128C0a6a3B2733c1365f4c9e2 |
 
 
-# V3Manager - Frontend Fees
+# V3Manager - Protocol Fees
 
 | Network  | Address                                    |
 | -------- | ------------------------------------------ |
