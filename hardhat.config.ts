@@ -51,8 +51,22 @@ import {
 	zetachain,
 	zkLinkNova,
 	zksync,
+	type Chain,
 } from "viem/chains";
 import { EvmChainId } from "sushi/chain";
+
+const setBlockExplorerApiUrl = (chain: Chain, apiUrl: string) => {
+	return {
+		...chain,
+		blockExplorers: {
+			...chain.blockExplorers,
+			default: {
+				...chain.blockExplorers?.default,
+				apiUrl,
+			},
+		},
+	};
+};
 
 const accounts = process.env.PRIVATE_KEY
 	? [process.env.PRIVATE_KEY]
@@ -68,12 +82,24 @@ const bobaBNB = {
 	rpcUrls: {
 		default: { http: ["https://bnb.boba.network"] },
 	},
+	blockExplorers: {
+		default: {
+			apiUrl: "https://api.routescan.io/v2/network/mainnet/evm/56288/etherscan",
+			url: "https://bobascan.com",
+		},
+	},
 };
 
 const hemi = {
 	id: 43111,
 	rpcUrls: {
 		default: { http: ["https://rpc.hemi.network/rpc"] },
+	},
+	blockExplorers: {
+		default: {
+			apiUrl: "https://explorer.hemi.xyz/api",
+			url: "https://explorer.hemi.xyz",
+		},
 	},
 };
 
@@ -84,7 +110,10 @@ const chains = {
 	avalanche,
 	base,
 	blast,
-	boba,
+	boba: setBlockExplorerApiUrl(
+		boba,
+		"https://api.routescan.io/v2/network/mainnet/evm/288/etherscan",
+	),
 	"boba-bnb": bobaBNB,
 	bsc,
 	bttc: bitTorrent,
@@ -137,9 +166,44 @@ const networks = Object.fromEntries(
 	]),
 );
 
+const etherscan = {
+	customChains: Object.entries(chains).reduce((accum, [key, value]) => {
+		if (
+			value.blockExplorers.default.url &&
+			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+			(value.blockExplorers.default as any).apiUrl
+		) {
+			accum.push({
+				network: key,
+				chainId: value.id,
+				urls: {
+					// biome-ignore lint/suspicious/noExplicitAny: fk types
+					apiURL: (value.blockExplorers.default as any).apiUrl,
+					browserURL: value.blockExplorers.default.url,
+				},
+			});
+		}
+		return accum;
+	}, [] as {
+		network: string,
+		chainId: number,
+		urls: {
+			apiURL: string,
+			browserURL: string
+		}
+	}[]),
+	apiKey: Object.fromEntries(
+		Object.entries(chains).map(([key, value]) => [
+			key,
+			process.env[`EXPLORER_${value.id}_KEY`] || "xxx",
+		]),
+	),
+};
+
 const config: HardhatUserConfig = {
 	defaultNetwork: "ethereum",
 	networks,
+	etherscan,
 	solidity: {
 		version: "0.8.20",
 		settings: {
