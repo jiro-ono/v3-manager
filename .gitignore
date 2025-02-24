@@ -1,3 +1,5 @@
+.DS_Store
+
 # Compiler files
 cache/
 out/
@@ -10,3 +12,21 @@ out/
 
 # Dotenv file
 .env
+node_modules
+.env
+
+# Hardhat files
+/cache
+/artifacts
+/cache-zk
+/artifacts-zk
+/cache_hardhat-zk
+/cache_hardhat
+
+# TypeChain files
+/typechain
+/typechain-types
+
+# solidity-coverage files
+/coverage
+/coverage.json

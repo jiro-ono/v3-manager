@@ -2,8 +2,8 @@
 pragma solidity 0.8.10;
 
 import "forge-std/Script.sol";
-import "../src/TokenChomper.sol";
-import "../src/V3Manager.sol";
+import "~/TokenChomper.sol";
+import "~/V3Manager.sol";
 
 contract DeployV3ManagerAndChomper is Script {
   address _owner = vm.envAddress("OWNER_ADDRESS");

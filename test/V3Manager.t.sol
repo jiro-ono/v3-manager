@@ -3,7 +3,7 @@ pragma solidity >= 0.8.0;
 
 import "utils/BaseTest.sol";
 
-import "/V3Manager.sol";
+import "~/V3Manager.sol";
 import "interfaces/IERC20.sol";
 
 import {console2} from "forge-std/console2.sol";
