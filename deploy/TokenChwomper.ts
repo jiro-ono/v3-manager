@@ -17,7 +17,7 @@ const getRPAddress = (chainId: EvmChainId) =>
 const getTokenAddress = (chainId: EvmChainId) =>
 	chainId === EvmChainId.SKALE_EUROPA ? SKL : WNATIVE_ADDRESS[chainId];
 
-const instanceCount = 2;
+const instanceCount = 3;
 
 const func: DeployFunction = async ({
 	ethers,
