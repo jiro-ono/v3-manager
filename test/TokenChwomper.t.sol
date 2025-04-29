@@ -86,7 +86,7 @@ contract TokenChwomperTest is BaseTest {
     );
 
     vm.prank(mockOperator);
-    tokenChwomper.snwap{value: 0}(
+    tokenChwomper.snwap(
       tokenIn,
       amountIn,
       address(tokenChwomper),
@@ -159,7 +159,7 @@ contract TokenChwomperTest is BaseTest {
     });
 
     vm.startPrank(mockOperator);
-    uint256[] memory amounts = tokenChwomper.snwapMultiple{value: 0}(
+    uint256[] memory amounts = tokenChwomper.snwapMultiple(
       inputs,
       outputs,
       executors

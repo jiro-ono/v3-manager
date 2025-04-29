@@ -34,7 +34,7 @@ contract TokenChwomper is Auth {
   }
   
   /// @notice Swaps tokens via the configured RedSnwapper
-  /// @dev Forwards any ETH in msg.value and must be called by a trusted operator
+  /// @dev Must be called by a trusted operator
   /// @param tokenIn Address of the input token
   /// @param amountIn Amount of the input token to swap
   /// @param recipient Address to receive the output tokens
@@ -51,12 +51,12 @@ contract TokenChwomper is Auth {
     uint256 amountOutMin,
     address executor,
     bytes calldata executorData
-  ) external payable onlyTrusted returns (uint256 amountOut) {
+  ) external onlyTrusted returns (uint256 amountOut) {
      // Pre-fund RedSnwapper with input tokens
      _safeTransfer(tokenIn, address(redSnwapper), amountIn);
 
     // Execute snwap with zero amountIn
-    amountOut = redSnwapper.snwap{ value: msg.value }(
+    amountOut = redSnwapper.snwap(
       tokenIn,
       0,
       recipient,
@@ -68,7 +68,7 @@ contract TokenChwomper is Auth {
   }
 
   /// @notice Performs multiple swaps via the configured RedSnwapper
-  /// @dev Forwards any ETH in msg.value for batch swaps
+  /// @dev Must be called by a trusted operator
   /// @param inputTokens Array of input token parameters
   /// @param outputTokens Array of output token requirements
   /// @param executors Array of executor calls to perform
@@ -77,7 +77,7 @@ contract TokenChwomper is Auth {
     IRedSnwapper.InputToken[] calldata inputTokens,
     IRedSnwapper.OutputToken[] calldata outputTokens,
     IRedSnwapper.Executor[] calldata executors
-  ) external payable onlyTrusted returns (uint256[] memory amountOut) {
+  ) external onlyTrusted returns (uint256[] memory amountOut) {
    uint256 length = inputTokens.length;
     IRedSnwapper.InputToken[] memory _inputTokens = new IRedSnwapper.InputToken[](length);
     for (uint256 i = 0; i < length; ++i) {
@@ -96,7 +96,7 @@ contract TokenChwomper is Auth {
     }
 
     // Execute snwapMultiple
-    amountOut = redSnwapper.snwapMultiple{ value: msg.value }(
+    amountOut = redSnwapper.snwapMultiple(
         _inputTokens,
         outputTokens,
         executors
