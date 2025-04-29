@@ -2,8 +2,8 @@ import type { HardhatRuntimeEnvironment } from "hardhat/types";
 import type { DeployFunction } from "hardhat-deploy/types";
 import { SKL, WNATIVE_ADDRESS } from "sushi/currency";
 import {
-	isRouteProcessor6ChainId,
-	ROUTE_PROCESSOR_6_ADDRESS,
+	isRedSnwapperChainId,
+	RED_SNWAPPER_ADDRESS,
 } from "sushi/config";
 import { EvmChainId } from "sushi/chain";
 
@@ -11,11 +11,13 @@ const getOperatorAddress = (_chainId: EvmChainId) =>
 	process.env.OPERATOR_ADDRESS;
 const getOwnerAddress = (chainId: EvmChainId) => getOperatorAddress(chainId);
 const getRPAddress = (chainId: EvmChainId) =>
-	isRouteProcessor6ChainId(chainId)
-		? ROUTE_PROCESSOR_6_ADDRESS[chainId]
+	isRedSnwapperChainId(chainId)
+		? RED_SNWAPPER_ADDRESS[chainId]
 		: undefined;
 const getTokenAddress = (chainId: EvmChainId) =>
 	chainId === EvmChainId.SKALE_EUROPA ? SKL : WNATIVE_ADDRESS[chainId];
+
+const instanceCount = 2;
 
 const func: DeployFunction = async ({
 	ethers,
@@ -39,29 +41,35 @@ const func: DeployFunction = async ({
 
 	console.log("Deployer address:", deployer.address);
 
-	console.log("Deploying TokenChomper...");
+	const deployedContracts: { name: string; address: string }[] = [];
 
-	const { address } = await deploy("TokenChomper", {
-		from: deployer.address,
-		args: [operator, rp, weth9],
-	});
+	for (let i = 0; i < instanceCount; i++) {
+		const name = `TokenChwomper_${i}`;
+	  
+		const { address, newlyDeployed } = await deploy(name, {
+		  contract: "TokenChwomper",
+		  from: deployer.address,
+		  args: [operator, rp, weth9],
+		});
+	  
+		console.log(`${name} ${newlyDeployed ? "deployed" : "already exists"} at`, address);
+		deployedContracts.push({ name, address });
+	}
 
-	console.log("TokenChomper deployed to", address);
-
-	{
-		const TokenChomper = await ethers.getContractAt(
-			"TokenChomper",
-			address,
-			deployer,
-		);
-
-		console.log("Transferring ownership to", owner);
-		const tx = await TokenChomper.transferOwnership(owner);
-		await tx.wait();
-		console.log("Successfully transferred ownership");
+	for (const { name, address } of deployedContracts) {
+		try {
+		  const TokenChwomper = await ethers.getContractAt("TokenChwomper", address, deployer);
+		  console.log(`Transferring ownership of ${name} at ${address} to ${owner}`);
+		  const tx = await TokenChwomper.transferOwnership(owner);
+		  await tx.wait();
+		  console.log(`✅ Ownership transferred for ${name}`);
+		} catch (error) {
+		  console.error(`❌ Ownership transfer FAILED for ${name} at ${address}`);
+		  console.error(error);
+		}
 	}
 };
 
-func.tags = ["TokenChomper"];
+func.tags = ["TokenChwomper"];
 
 export default func;
