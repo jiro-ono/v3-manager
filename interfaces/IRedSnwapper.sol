@@ -28,11 +28,11 @@ interface IRedSnwapper {
         uint256 amountOutMin,
         address executor,
         bytes calldata executorData
-    ) external payable returns (uint256 amountOut);
+    ) external returns (uint256 amountOut);
 
     function snwapMultiple(
         InputToken[] calldata inputTokens,
         OutputToken[] calldata outputTokens,
         Executor[] calldata executors
-    ) external payable returns (uint256[] memory amountOut);
+    ) external returns (uint256[] memory amountOut);
 }
