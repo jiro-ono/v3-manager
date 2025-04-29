@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity >=0.8.0;
+
 import "interfaces/IRedSnwapper.sol";
 import "interfaces/IERC20.sol";
 import "./Auth.sol";
@@ -8,7 +9,6 @@ import "./Auth.sol";
 /// @notice This contract will be used for fee collection and breakdown
 /// @dev Uses Auth contract for 2-step owner process and trust operators to guard functions
 contract TokenChwomper is Auth {
-
   address public immutable weth;
   IRedSnwapper public redSnwapper;
 
