@@ -33,7 +33,7 @@ contract Constants {
         setAddress("polygon.v2Factory", 0xc35DADB65012eC5796536bD9864eD8773aBc74C4);
         setAddress("polygon.v3Factory", 0x917933899c6a5F8E37F31E19f92CdBFF7e8FF0e2);
         setAddress("polygon.routeprocessor3", 0x0a6e511Fe663827b9cA7e2D2542b20B37fC217A6);
-
+        setAddress("polygon.redSnwapper", 0xAC4c6e212A361c968F1725b4d055b47E63F80b75);
         // Fantom
     }
 

@@ -68,6 +68,15 @@ const setBlockExplorerApiUrl = (chain: Chain, apiUrl: string) => {
 	};
 };
 
+const setRpcUrl = (chain: Chain, rpcUrl: string) => {
+	return {
+		...chain,
+		rpcUrls: {
+			default: { http: [rpcUrl] },
+		}
+	}
+}
+
 const accounts = process.env.PRIVATE_KEY
 	? [process.env.PRIVATE_KEY]
 	: {
@@ -108,7 +117,10 @@ const chains = {
 	arbitrum,
 	"arbitrum-nova": arbitrumNova,
 	avalanche,
-	base,
+	base: setRpcUrl(
+		base,
+		"https://base.llamarpc.com"
+	),
 	blast,
 	boba: setBlockExplorerApiUrl(
 		boba,
@@ -130,9 +142,15 @@ const chains = {
 	hemi,
 	kava,
 	linea,
-	manta,
+	manta: setRpcUrl(
+		manta,
+		"https://manta-pacific-gascap.calderachain.xyz/http"
+	),
 	mantle,
-	metis,
+	metis: setRpcUrl(
+		metis,
+		"https://andromeda.metis.io/?owner=1088"
+	),
 	mode,
 	moonbeam,
 	moonriver,

@@ -1,11 +1,12 @@
-import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { DeployFunction } from "hardhat-deploy/types";
-import { SKL, WNATIVE_ADDRESS } from "sushi/currency";
+import type { HardhatRuntimeEnvironment } from "hardhat/types";
+import type { DeployFunction } from "hardhat-deploy/types";
+import { WNATIVE_ADDRESS } from "sushi/currency";
 import {
 	isRouteProcessor6ChainId,
 	ROUTE_PROCESSOR_6_ADDRESS,
 } from "sushi/config";
 import { EvmChainId } from "sushi/chain";
+import { zeroAddress } from "viem";
 
 const getOperatorAddress = (_chainId: EvmChainId) =>
 	process.env.OPERATOR_ADDRESS;
@@ -15,13 +16,13 @@ const getRPAddress = (chainId: EvmChainId) =>
 		? ROUTE_PROCESSOR_6_ADDRESS[chainId]
 		: undefined;
 const getTokenAddress = (chainId: EvmChainId) =>
-	chainId === EvmChainId.SKALE_EUROPA ? SKL : WNATIVE_ADDRESS[chainId];
+	chainId === EvmChainId.SKALE_EUROPA ? zeroAddress : WNATIVE_ADDRESS[chainId];
 
-const func: DeployFunction = async function ({
+const func: DeployFunction = async ({
 	ethers,
 	deployments,
 	getChainId,
-}: HardhatRuntimeEnvironment) {
+}: HardhatRuntimeEnvironment) => {
 	const { deploy } = deployments;
 	const chainId = +(await getChainId()) as EvmChainId;
 	const { deployer } = await ethers.getNamedSigners();
